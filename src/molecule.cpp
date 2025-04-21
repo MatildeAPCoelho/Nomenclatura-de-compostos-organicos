@@ -109,6 +109,9 @@ std::map<Atom*, std::vector<unsigned int>> Molecule::getFunctionalGroups() {
     return groups;
 }
 
+std::pair<unsigned int, std::string> getPreffixes() {
+}
+
 std::string Molecule::getName() {
     // find functional groups
     std::map<Atom*, std::vector<unsigned int>> groups = getFunctionalGroups();
@@ -157,21 +160,30 @@ std::string Molecule::getName() {
             carbox = true;
         }
     }
-    if (carbox && (principalGroup == CARBOXYL || principalGroup == CARBOALKOXY || principalGroup == HALOFORMYL || principalGroup == CARBOXAMIDE || principalGroup == NITRILE)) {
+    if (carbox) {
+        possibleChains.clear();
+    }
+    if (principalGroup == CARBOXYL || principalGroup == CARBOALKOXY || principalGroup == HALOFORMYL || principalGroup == CARBOXAMIDE || principalGroup == NITRILE) {
+        std::vector<Atom*> ignoredAtoms;
         for (int i = 0; i < principalGroupAtoms.size(); i++) {
             for (int j = 0; j < principalGroupAtoms[i]->bonds.size(); j++) {
                 if (principalGroupAtoms[i]->bonds[j]->species == CARBON) {
+                    groups.erase(principalGroupAtoms[i]);
+                    groups[principalGroupAtoms[i]->bonds[j]].push_back(principalGroup);
+                    
+                    ignoredAtoms.push_back(principalGroupAtoms[i]);
+
                     principalGroupAtoms[i] = principalGroupAtoms[i]->bonds[j];
                     break;
                 }
             }
         }
-    }
-    possibleChains.clear();
-    for (int i = 0; i < principalGroupAtoms.size(); i++) {
-        Chain chain = principalGroupAtoms[i]->getPrincipalChain(std::vector<Atom*>(), groups, principalGroup);
-        chain = getOrderedChain(chain);
-        possibleChains.push_back(chain);
+        
+        for (int i = 0; i < principalGroupAtoms.size(); i++) {
+            Chain chain = principalGroupAtoms[i]->getPrincipalChain(std::vector<Atom*>(), groups, principalGroup, ignoredAtoms);
+            chain = getOrderedChain(chain);
+            possibleChains.push_back(chain);
+        }
     }
 
     
@@ -187,9 +199,9 @@ std::string Molecule::getName() {
     }
     
     // determine principal chain
-
     principalChain = compareChains(possibleChains)[0];
-    //Chain principalChain = compareChains(possibleChains);
+    
+    // name substituents
 
     return "NO NAME YET";
 }

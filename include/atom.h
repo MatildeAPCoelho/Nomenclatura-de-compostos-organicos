@@ -27,7 +27,7 @@ class Atom {
 
     Atom (unsigned int species, Atom* bond, glm::vec2 position = glm::vec2(0.0f));
 
-    Chain getPrincipalChain (std::vector<Atom*> precedingAtoms, std::map<Atom*, std::vector<unsigned int>> groups, int principalGroup);
+    Chain getPrincipalChain (std::vector<Atom*> precedingAtoms, std::map<Atom*, std::vector<unsigned int>> groups, int principalGroup, std::vector<Atom*> ignoredAtoms = {});
 };
 
 struct Chain {

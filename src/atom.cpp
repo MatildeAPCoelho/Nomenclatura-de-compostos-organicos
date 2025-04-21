@@ -307,7 +307,7 @@ Chain getOrderedChain(Chain chain) {
     return bestChains[0];
 }
 
-Chain Atom::getPrincipalChain (std::vector<Atom*> precedingAtoms, std::map<Atom*, std::vector<unsigned int>> groups, int principalGroup) {
+Chain Atom::getPrincipalChain (std::vector<Atom*> precedingAtoms, std::map<Atom*, std::vector<unsigned int>> groups, int principalGroup, std::vector<Atom*> ignoredAtoms) {
     std::vector<Chain> possibleChains;
 
     // get branches
@@ -320,8 +320,18 @@ Chain Atom::getPrincipalChain (std::vector<Atom*> precedingAtoms, std::map<Atom*
             continue;
         }
 
-        // multiple bond
         bool skip = false;
+        for (int j = 0; j < ignoredAtoms.size(); j++) {
+            if (bonds[i] == ignoredAtoms[j]) {
+                skip = true;
+                break;
+            }
+        }
+        if (skip)
+            continue;
+
+        // multiple bond
+        skip = false;
         for (int j = 0; j < i; j++) {
             if (bonds[i] == bonds[j]) {
                 skip = true;
@@ -366,7 +376,7 @@ Chain Atom::getPrincipalChain (std::vector<Atom*> precedingAtoms, std::map<Atom*
         // branch
         std::vector<Atom*> currentChain = precedingAtoms;
         currentChain.push_back(this);
-        chain = bonds[i]->getPrincipalChain(currentChain, groups, principalGroup);
+        chain = bonds[i]->getPrincipalChain(currentChain, groups, principalGroup, ignoredAtoms);
 
         if (chain.isCyclic) {
             possibleChains.clear();
