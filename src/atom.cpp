@@ -316,7 +316,7 @@ Chain Atom::getPrincipalChain (std::vector<Atom*> precedingAtoms, std::map<Atom*
         if (bonds[i]->species != CARBON) {
             continue;
         }
-        if (precedingAtoms.size() > 0 && bonds[i] == precedingAtoms[precedingAtoms.size()-1]) { // double bond
+        if (precedingAtoms.size() > 0 && bonds[i] == precedingAtoms[precedingAtoms.size()-1]) { // double bond behind
             continue;
         }
 
@@ -330,15 +330,16 @@ Chain Atom::getPrincipalChain (std::vector<Atom*> precedingAtoms, std::map<Atom*
                     if (possibleChains[k].chain.size() > 0 && possibleChains[k].chain.back() == bonds[i]) {
                         // triple bond
                         if (possibleChains[k].doubleBonds.size() != 0 && possibleChains[k].doubleBonds.back() == precedingAtoms.size()) {
-                            possibleChains[k].doubleBonds.erase(possibleChains[k].doubleBonds.end());
+                            possibleChains[k].doubleBonds.erase(possibleChains[k].doubleBonds.end() - 1);
                         }
                         // double bond
                         else {
                             possibleChains[k].multipleBonds.push_back(precedingAtoms.size());
+                            possibleChains[k].doubleBonds.push_back(precedingAtoms.size());
                         }
                     }
                 }
-                continue;
+                break;
             }
         }
         if (skip)
@@ -413,14 +414,6 @@ Chain Atom::getPrincipalChain (std::vector<Atom*> precedingAtoms, std::map<Atom*
         principalChain.branches = branches;
     }
     principalChain.chain.push_back(this);
-
-
-
-    // join two sides of the full chains << in molecule.cpp
-    //if (precedingAtoms.size() == 0 && possibleChains.size() > 0) {
-    //    Chain secondChain = compareChains(possibleChains);
-    //    principalChain = joinChains(principalChain, secondChain);
-    //}
 
     // add substituent groups at current atom
     if (groups.find(this) != groups.end()) {

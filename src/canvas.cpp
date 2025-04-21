@@ -5,7 +5,6 @@
 #include "shape_renderer.h"
 
 #include <GLFW/glfw3.h>
-#include <iostream>
 
 // utility functions
 Molecule* getAtomMolecule(std::vector<Molecule*> molecules, Atom* atom);
@@ -29,51 +28,6 @@ void Canvas::init() {
     lineRenderer = new LineRenderer(ResourceManager::GetShader("line"));
     shapeRenderer = new ShapeRenderer(ResourceManager::GetShader("shape"));
     renderer = new MoleculeRenderer(lineRenderer, shapeRenderer);
-    
-
-    std::vector<Atom*> atoms;
-    // exercício 8.a)
-    atoms.push_back(new Atom(CARBON, nullptr, glm::vec2(0.1, 0.5)*windowSize));
-    atoms.push_back(new Atom(CARBON, atoms[0], glm::vec2(0.2, 0.6)*windowSize));
-    atoms.push_back(new Atom(OXYGEN, atoms[1], glm::vec2(0.3, 0.5)*windowSize));
-    atoms.push_back(new Atom(CARBON, atoms[2], glm::vec2(0.4, 0.6)*windowSize)); // 3
-    atoms.push_back(new Atom(CARBON, atoms[3], glm::vec2(0.4, 0.7)*windowSize)); // 4
-    atoms.push_back(new Atom(CARBON, atoms[4], glm::vec2(0.3, 0.8)*windowSize));
-    atoms.push_back(new Atom(OXYGEN, atoms[5], glm::vec2(0.2, 0.7)*windowSize));
-    atoms[5]->bonds.push_back(atoms[6]);
-    atoms[6]->bonds.push_back(atoms[5]);
-    atoms.push_back(new Atom(CARBON, atoms[4], glm::vec2(0.5, 0.8)*windowSize));
-    atoms.push_back(new Atom(CARBON, atoms[7], glm::vec2(0.5, 0.9)*windowSize));
-    atoms.push_back(new Atom(CARBON, atoms[3], glm::vec2(0.5, 0.5)*windowSize)); // 9
-    atoms.push_back(new Atom(CARBON, atoms[9], glm::vec2(0.6, 0.6)*windowSize)); // 10
-    atoms.push_back(new Atom(BROMINE, atoms[10], glm::vec2(0.6, 0.7)*windowSize));
-    atoms.push_back(new Atom(CARBON, atoms[10], glm::vec2(0.7, 0.5)*windowSize)); // 12
-    atoms.push_back(new Atom(NITROGEN, atoms[12], glm::vec2(0.7, 0.4)*windowSize));
-    atoms.push_back(new Atom(CARBON, atoms[12], glm::vec2(0.8, 0.6)*windowSize)); // 14
-    atoms.push_back(new Atom(NITROGEN, atoms[14], glm::vec2(0.9, 0.5)*windowSize));
-    atoms.push_back(new Atom(OXYGEN, atoms[14], glm::vec2(0.8, 0.7)*windowSize));
-    atoms[14]->bonds.push_back(atoms[16]);
-    atoms[16]->bonds.push_back(atoms[14]);
-    atoms.push_back(new Atom(CARBON, atoms[9], glm::vec2(0.5, 0.4)*windowSize)); // 17
-    atoms.push_back(new Atom(CARBON, atoms[17], glm::vec2(0.6, 0.3)*windowSize));
-    atoms[17]->bonds.push_back(atoms[18]);
-    atoms[18]->bonds.push_back(atoms[17]);
-    atoms.push_back(new Atom(CARBON, atoms[18], glm::vec2(0.6, 0.2)*windowSize)); // 19
-    atoms.push_back(new Atom(SULFUR, atoms[19], glm::vec2(0.7, 0.1)*windowSize));
-    atoms.push_back(new Atom(CARBON, atoms[19], glm::vec2(0.5, 0.1)*windowSize));
-    atoms[19]->bonds.push_back(atoms[21]);
-    atoms[21]->bonds.push_back(atoms[19]);
-    atoms.push_back(new Atom(CARBON, atoms[21], glm::vec2(0.4, 0.2)*windowSize));
-    atoms.push_back(new Atom(CARBON, atoms[22], glm::vec2(0.4, 0.3)*windowSize));
-    atoms[22]->bonds.push_back(atoms[23]);
-    atoms[23]->bonds.push_back(atoms[22]);
-    atoms.push_back(new Atom(OXYGEN, atoms[23], glm::vec2(0.3, 0.4)*windowSize));
-    atoms[17]->bonds.push_back(atoms[23]);
-    atoms[23]->bonds.push_back(atoms[17]);
-    
-    
-
-    //molecules.push_back(new Molecule(atoms));
 }
 
 void Canvas::processInput() {
@@ -128,17 +82,17 @@ void Canvas::processInput() {
                 if (hoveredAtom != lineOrigin) {
                     lineOrigin->bonds.push_back(hoveredAtom);
                     hoveredAtom->bonds.push_back(lineOrigin);
-                }
 
-                // join molecules
-                Molecule* joinedMolecule = getAtomMolecule(molecules, hoveredAtom);
-                if (molecule != joinedMolecule) {
-                    molecule->atoms.insert(molecule->atoms.end(), joinedMolecule->atoms.begin(), joinedMolecule->atoms.end());
-                    for (int i = 0; i < molecules.size(); i++) {
-                        if (molecules[i] == joinedMolecule) {
-                            molecules.erase(molecules.begin() + i);
-                            delete joinedMolecule;
-                            break;
+                    // join molecules
+                    Molecule* joinedMolecule = getAtomMolecule(molecules, hoveredAtom);
+                    if (molecule != joinedMolecule) {
+                        molecule->atoms.insert(molecule->atoms.end(), joinedMolecule->atoms.begin(), joinedMolecule->atoms.end());
+                        for (int i = 0; i < molecules.size(); i++) {
+                            if (molecules[i] == joinedMolecule) {
+                                molecules.erase(molecules.begin() + i);
+                                delete joinedMolecule;
+                                break;
+                            }
                         }
                     }
                 }
