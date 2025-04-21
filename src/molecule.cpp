@@ -147,6 +147,34 @@ std::string Molecule::getName() {
         chain = getOrderedChain(chain);
         possibleChains.push_back(chain);
     }
+    // carbox-
+    bool carbox = false;
+    for (int i = 0; i < possibleChains.size(); i++) {
+        if (possibleChains[i].chain.size() > 1) {
+            break;
+        }
+        if (i == possibleChains.size() - 1) {
+            carbox = true;
+        }
+    }
+    if (carbox && (principalGroup == CARBOXYL || principalGroup == CARBOALKOXY || principalGroup == HALOFORMYL || principalGroup == CARBOXAMIDE || principalGroup == NITRILE)) {
+        for (int i = 0; i < principalGroupAtoms.size(); i++) {
+            for (int j = 0; j < principalGroupAtoms[i]->bonds.size(); j++) {
+                if (principalGroupAtoms[i]->bonds[j]->species == CARBON) {
+                    principalGroupAtoms[i] = principalGroupAtoms[i]->bonds[j];
+                    break;
+                }
+            }
+        }
+    }
+    possibleChains.clear();
+    for (int i = 0; i < principalGroupAtoms.size(); i++) {
+        Chain chain = principalGroupAtoms[i]->getPrincipalChain(std::vector<Atom*>(), groups, principalGroup);
+        chain = getOrderedChain(chain);
+        possibleChains.push_back(chain);
+    }
+
+    
     // possible chains without principle group
     if (possibleChains.size() == 0) {
         for (int i = 0; i < atoms.size(); i++) {
