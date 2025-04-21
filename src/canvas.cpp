@@ -103,6 +103,7 @@ void Canvas::processInput() {
             drawingLine = false;
         }
     }
+    // change drawing atom species
     if (keys[GLFW_KEY_C]) {
         drawingSpecies = CARBON;
         if (hoveredAtom != nullptr)
@@ -132,6 +133,41 @@ void Canvas::processInput() {
         drawingSpecies = SULFUR;
         if (hoveredAtom != nullptr)
             hoveredAtom->species = SULFUR;
+    }
+    // delete atom -- TODO: divide moleucles ??
+    else if (keys[GLFW_KEY_DELETE]) {
+        if (hoveredAtom != nullptr) {
+            Molecule* molecule = getAtomMolecule(molecules, hoveredAtom);
+
+            // delete atom from molecule
+            for (int i = 0; i < molecule->atoms.size(); i++) {
+                if (molecule->atoms[i] == hoveredAtom) {
+                    molecule->atoms.erase(molecule->atoms.begin() + i);
+                    break;
+                }
+            }
+
+            // delete molecule
+            if (hoveredAtom->bonds.size() == 0) {
+                for (int i = 0; i < molecules.size(); i++) {
+                    if (molecules[i] == molecule) {
+                        molecules.erase(molecules.begin() + i);
+                    }
+                }
+            }
+            // delete atom from bonds
+            else {
+                for (int i = 0; i < hoveredAtom->bonds.size(); i++) {
+                    for (int j = 0; j < hoveredAtom->bonds[i]->bonds.size(); j++) {
+                        if (hoveredAtom->bonds[i]->bonds[j] == hoveredAtom) {
+                            hoveredAtom->bonds[i]->bonds.erase(hoveredAtom->bonds[i]->bonds.begin() + j);
+                            break;
+                        }
+                    }
+                }
+            }
+            delete hoveredAtom;
+        }
     }
 
 
