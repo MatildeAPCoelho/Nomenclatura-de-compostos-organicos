@@ -35,7 +35,7 @@ void MoleculeRenderer::drawMolecule(Molecule* molecule) {
         for (int j = 0; j < molecule->atoms[i]->bonds.size(); j++) {
             alreadyDrawn = false;
             for (int k = 0; k < i; k++) {
-                if (molecule->atoms[i]->bonds[j] == molecule->atoms[j]) {
+                if (molecule->atoms[i]->bonds[j] == molecule->atoms[k]) {
                     alreadyDrawn = true;
                     break;
                 }

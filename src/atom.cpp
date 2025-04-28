@@ -425,21 +425,13 @@ Chain Atom::getPrincipalChain (std::vector<Atom*> precedingAtoms, std::map<Atom*
     }
     principalChain.chain.push_back(this);
 
-    // add substituent groups at current atom
+    // add principal groups at current atom
     if (groups.find(this) != groups.end()) {
         for (int i = 0; i < groups[this].size(); i++) {
             if (groups[this][i] == principalGroup) {
                 principalChain.principalGroups.push_back(precedingAtoms.size());
             }
-            else {
-                unsigned int pos = precedingAtoms.size();
-                principalChain.substituents.push_back(std::pair{pos, groups[this][i]});
-            }
         }
-    }
-    for (int i = 0; i < possibleChains.size(); i++) {
-        unsigned int pos = precedingAtoms.size();
-        principalChain.substituents.push_back(std::pair{pos, 0});
     }
 
     return principalChain;

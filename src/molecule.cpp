@@ -109,7 +109,35 @@ std::map<Atom*, std::vector<unsigned int>> Molecule::getFunctionalGroups() {
     return groups;
 }
 
-std::pair<unsigned int, std::string> getPreffixes() {
+std::string getChainPreffix(Chain chain) {
+    std::map<std::string, std::vector<unsigned int>> preffixes;
+    
+    for (int i = 0; i < chain.chain.size(); i++) {
+        for (int j = 0; j < chain.chain[i]->bonds.size(); j++) {
+            bool skip = false;
+            for (int k = 0; j < chain.chain.size(); k++) {
+                if (chain.chain[i]->bonds[j] == chain.chain[k]) {
+                    skip = true;
+                    break;
+                }
+            }
+            if (skip)
+                continue;
+
+            if (chain.chain[i]->bonds[j]->species == CARBON) {
+                // getPrincipalChain
+                // getPreffix
+            }
+        }
+    }
+    // loop through chain
+    // substituents not in chain nor principal gropus (how?) -> getPreffix()
+    // getPreffix
+    // functional group ->
+    // not functional group -> getPrincipalChain (principalGroup = 0; ignore atom from other chain); getPreffix + carbon + "il"
+    // nameCarbonChain()
+
+    return "NO NAME YET";
 }
 
 std::string Molecule::getName() {
@@ -186,7 +214,6 @@ std::string Molecule::getName() {
         }
     }
 
-    
     // possible chains without principle group
     if (possibleChains.size() == 0) {
         for (int i = 0; i < atoms.size(); i++) {
@@ -202,6 +229,9 @@ std::string Molecule::getName() {
     principalChain = compareChains(possibleChains)[0];
     
     // name substituents
+    std::string name = getChainPreffix(principalChain);
 
-    return "NO NAME YET";
+    // get suffix
+    
+    return name;
 }

@@ -34,7 +34,6 @@ struct Chain {
     std::vector<unsigned int> principalGroups;
     std::vector<unsigned int> multipleBonds;
     std::vector<unsigned int> doubleBonds;
-    std::vector<std::pair<unsigned int, unsigned int>> substituents;
     std::vector<Atom*> chain;
     std::vector<Chain> branches;
     bool isCyclic = false;

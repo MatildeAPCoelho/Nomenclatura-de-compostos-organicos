@@ -5,9 +5,11 @@
 #include "shape_renderer.h"
 
 #include <GLFW/glfw3.h>
+#include <iostream>
 
 // utility functions
 Molecule* getAtomMolecule(std::vector<Molecule*> molecules, Atom* atom);
+std::vector<Atom*> getConnectedAtoms(Atom* atom, std::vector<Atom*> viewedAtoms);
 
 Canvas::Canvas(glm::vec2 windowSize) : windowSize(windowSize) {
 }
@@ -134,7 +136,7 @@ void Canvas::processInput() {
         if (hoveredAtom != nullptr)
             hoveredAtom->species = SULFUR;
     }
-    // delete atom -- TODO: divide moleucles ??
+    // delete atom
     else if (keys[GLFW_KEY_DELETE]) {
         if (hoveredAtom != nullptr) {
             Molecule* molecule = getAtomMolecule(molecules, hoveredAtom);
@@ -147,26 +149,43 @@ void Canvas::processInput() {
                 }
             }
 
-            // delete molecule
-            if (hoveredAtom->bonds.size() == 0) {
-                for (int i = 0; i < molecules.size(); i++) {
-                    if (molecules[i] == molecule) {
-                        molecules.erase(molecules.begin() + i);
+            // delete atom from bonds
+            for (int i = 0; i < hoveredAtom->bonds.size(); i++) {
+                for (int j = 0; j < hoveredAtom->bonds[i]->bonds.size(); j++) {
+                    if (hoveredAtom->bonds[i]->bonds[j] == hoveredAtom) {
+                        hoveredAtom->bonds[i]->bonds.erase(hoveredAtom->bonds[i]->bonds.begin() + j);
+                        break;
                     }
                 }
             }
-            // delete atom from bonds
-            else {
-                for (int i = 0; i < hoveredAtom->bonds.size(); i++) {
-                    for (int j = 0; j < hoveredAtom->bonds[i]->bonds.size(); j++) {
-                        if (hoveredAtom->bonds[i]->bonds[j] == hoveredAtom) {
-                            hoveredAtom->bonds[i]->bonds.erase(hoveredAtom->bonds[i]->bonds.begin() + j);
+
+            // separate molecules
+            for (int i = 0; i < hoveredAtom->bonds.size(); i++) {
+                std::vector<Atom*> connectedAtoms = getConnectedAtoms(hoveredAtom->bonds[i], std::vector<Atom *>{hoveredAtom->bonds[i]});
+                
+                for (int j = i+1; j < hoveredAtom->bonds.size(); j++) {
+                    for (int k = 0; k < connectedAtoms.size(); k++) {
+                        // connected
+                        if (hoveredAtom->bonds[j] == connectedAtoms[k]) {
+                            hoveredAtom->bonds.erase(hoveredAtom->bonds.begin() + j);
+                            j--;
                             break;
                         }
                     }
                 }
+                // create new molecule
+                molecules.push_back(new Molecule(connectedAtoms));
             }
+            
+            // delete original molecule
+            for (int i = 0; i < molecules.size(); i++) {
+                if (molecules[i] == molecule) {
+                    molecules.erase(molecules.begin() + i);
+                }
+            }
+
             delete hoveredAtom;
+            hoveredAtom = nullptr;
         }
     }
 
@@ -176,7 +195,7 @@ void Canvas::processInput() {
     if (keys[GLFW_KEY_ENTER]) {
         if (!heldKeys[GLFW_KEY_ENTER]) {
             for (int i = 0; i < molecules.size(); i++) {
-                molecules[i]->getName();
+                std::cout << molecules[i]->getName() << std::endl;;
             }
         }
         heldKeys[GLFW_KEY_ENTER] = true;
@@ -233,4 +252,18 @@ Molecule* getAtomMolecule(std::vector<Molecule*> molecules, Atom* atom) {
         }
     }
     return nullptr;
+}
+
+std::vector<Atom*> getConnectedAtoms(Atom* atom, std::vector<Atom*> viewedAtoms) {
+    for (int i = 0; i < atom->bonds.size(); i++) {
+        for (int j = 0; j < viewedAtoms.size(); j++) {
+            if (atom->bonds[i] == viewedAtoms[j]) {
+                goto loopiEnd;
+            }
+        }
+        viewedAtoms.push_back(atom->bonds[i]);
+        viewedAtoms = getConnectedAtoms(atom->bonds[i], viewedAtoms);
+        loopiEnd:;
+    }
+    return viewedAtoms;
 }
