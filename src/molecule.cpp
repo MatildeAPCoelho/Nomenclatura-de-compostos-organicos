@@ -1,6 +1,8 @@
 #include "molecule.h"
 #include "atom.h"
 #include <iostream>
+#include <string>
+#include <vector>
 
 #define LOG(msg) std::cout << __LINE__ << " | " << msg << std::endl
 
@@ -109,8 +111,112 @@ std::map<Atom*, std::vector<unsigned int>> Molecule::getFunctionalGroups() {
     return groups;
 }
 
-std::string getChainPreffix(Chain chain) {
-    std::map<std::string, std::vector<unsigned int>> preffixes;
+std::map<int, std::string> greekPrefix = {
+    {1, ""},
+    {2, "di"},
+    {3, "tri"},
+    {4, "tetra"},
+    {5, "penta"},
+    {6, "hexa"},
+    {7, "hepta"},
+    {8, "octa"},
+    {9, "nona"},
+    {10, "deca"}
+};
+
+std::string nameCarbonChain(Chain chain, bool isSubstituent = false) {
+    std::string name;
+
+    std::map<int, std::string> length = {
+        {1, "met"},
+        {2, "et"},
+        {3, "prop"},
+        {4, "but"},
+        {5, "pent"},
+        {6, "hex"},
+        {7, "hept"},
+        {8, "oct"},
+        {9, "non"},
+        {10, "dec"},
+        {11, "undec"},
+        {12, "dodec"},
+        {13, "tridec"},
+        {20, "icos"}
+        // rules...
+    };
+
+    if (length.find(chain.chain.size()) != length.end()) {
+        name = length[chain.chain.size()];
+    }
+    else {
+        name = std::to_string(chain.chain.size());
+    }
+
+
+    if (chain.multipleBonds.size() == 0) {
+        name += "an";
+    }
+    else {
+        // double bonds
+        if (chain.doubleBonds.size() > 0) {
+            if (chain.doubleBonds.size() > 1) {
+                name += "a";
+            }
+            name += "-" + std::to_string(chain.doubleBonds[0]+1);
+
+            for (int i = 1; i < chain.doubleBonds.size(); i++) {
+                name += "," + std::to_string(chain.doubleBonds[i]+1);
+            }
+
+            if (greekPrefix.find(chain.doubleBonds.size()) != greekPrefix.end()) {
+                name += "-" + greekPrefix[chain.doubleBonds.size()] + "en";
+            }
+            else {
+                name += "-" + std::to_string(chain.doubleBonds.size()) + "en";
+            }
+        }
+
+        // triple bonds
+        std::vector<int> tripleBonds;
+        for (int i = 0; i < chain.multipleBonds.size(); i++) {
+            if (chain.multipleBonds.size() == chain.doubleBonds.size()) {
+                break;
+            }
+            for (int j = 0; j < chain.doubleBonds.size(); j++) {
+                if (chain.multipleBonds[i] == chain.doubleBonds[j]) {
+                    goto loopiEnd;
+                }
+            }
+            tripleBonds.push_back(chain.multipleBonds[i]);
+            loopiEnd:;
+        }
+        if (tripleBonds.size() > 0) {
+            if (tripleBonds.size() > 1) {
+                if (chain.doubleBonds.size() > 0)
+                    name += "o";
+                else
+                    name += "a";
+            }
+
+            name += "-" + std::to_string(tripleBonds[0]+1);
+            for (int i = 1; i < tripleBonds.size(); i++) {
+                name += "," + std::to_string(tripleBonds[i]+1);
+            }
+
+            if (greekPrefix.find(tripleBonds.size()) != greekPrefix.end()) {
+                name += "-" + greekPrefix[tripleBonds.size()] + "in";
+            }
+            else {
+                name += "-" + std::to_string(tripleBonds.size()) + "in";
+            }
+        }
+    }
+
+    return name;
+}
+
+std::string getChainPrefix(Chain chain) {
+    std::map<std::string, std::vector<unsigned int>> prefixes;
     
     // getFunctionalGroups
 
@@ -118,7 +224,7 @@ std::string getChainPreffix(Chain chain) {
     for (int i = 0; i < chain.chain.size(); i++) {
         for (int j = 0; j < chain.chain[i]->bonds.size(); j++) {
             bool skip = false;
-            for (int k = 0; j < chain.chain.size(); k++) {
+            for (int k = 0; k < chain.chain.size(); k++) {
                 if (chain.chain[i]->bonds[j] == chain.chain[k]) {
                     skip = true;
                     break;
@@ -131,7 +237,7 @@ std::string getChainPreffix(Chain chain) {
                 // secondary chain
                 case CARBON:
                     // getPrincipalChain
-                    // getPreffix
+                    // getPrefix
                     // -il-
                     break;
 
@@ -139,7 +245,7 @@ std::string getChainPreffix(Chain chain) {
                     // eter
                     if (chain.chain[i]->bonds[j]->bonds.size() == 2) {
                         // getPrincipalChain
-                        // getPreffix
+                        // getPrefix
                         // -oxi-
                     }
                     break;
@@ -148,7 +254,7 @@ std::string getChainPreffix(Chain chain) {
                     // sulfanil
                     if (chain.chain[i]->bonds[j]->bonds.size() == 2) {
                         // getPrincipalChain
-                        // getPreffix
+                        // getPrefix
                         // -sulfanil-
                     }
                     break;
@@ -157,7 +263,7 @@ std::string getChainPreffix(Chain chain) {
                     // amine
                     for (int i = 0; i < chain.chain[i]->bonds[j]->bonds.size(); i++) {
                         // getPrincipalChain
-                        // getPreffix
+                        // getPrefix
                     }
                     // -amino-
                     break;
@@ -181,12 +287,12 @@ std::string getChainPreffix(Chain chain) {
         }
     }
     
-    // order preffixes
+    // order prefixes
     // functional group ->
-    // not functional group -> getPrincipalChain (principalGroup = 0; ignore atom from other chain); getPreffix + carbon + "il"
-    // nameCarbonChain()
+    // not functional group -> getPrincipalChain (principalGroup = 0; ignore atom from other chain); getPrefix + carbon + "il"
+    std::string suffix = nameCarbonChain(chain);
 
-    return "NO NAME YET";
+    return suffix;
 }
 
 std::string Molecule::getName() {
@@ -278,7 +384,7 @@ std::string Molecule::getName() {
     principalChain = compareChains(possibleChains)[0];
     
     // name substituents
-    std::string name = getChainPreffix(principalChain);
+    std::string name = getChainPrefix(principalChain);
 
     // get suffix
     

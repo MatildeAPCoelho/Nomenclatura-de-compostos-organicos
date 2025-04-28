@@ -1,6 +1,6 @@
 #include "atom.h"
 #include <vector>
-#include <iostream>
+
 Atom::Atom (unsigned int species, Atom* bond, glm::vec2 position) {
     this->species = species;
     this->position = position;
