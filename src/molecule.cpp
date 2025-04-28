@@ -112,6 +112,9 @@ std::map<Atom*, std::vector<unsigned int>> Molecule::getFunctionalGroups() {
 std::string getChainPreffix(Chain chain) {
     std::map<std::string, std::vector<unsigned int>> preffixes;
     
+    // getFunctionalGroups
+
+    // look for substituents
     for (int i = 0; i < chain.chain.size(); i++) {
         for (int j = 0; j < chain.chain[i]->bonds.size(); j++) {
             bool skip = false;
@@ -124,15 +127,61 @@ std::string getChainPreffix(Chain chain) {
             if (skip)
                 continue;
 
-            if (chain.chain[i]->bonds[j]->species == CARBON) {
-                // getPrincipalChain
-                // getPreffix
+            switch (chain.chain[i]->bonds[j]->species) {
+                // secondary chain
+                case CARBON:
+                    // getPrincipalChain
+                    // getPreffix
+                    // -il-
+                    break;
+
+                case OXYGEN: // ester??
+                    // eter
+                    if (chain.chain[i]->bonds[j]->bonds.size() == 2) {
+                        // getPrincipalChain
+                        // getPreffix
+                        // -oxi-
+                    }
+                    break;
+
+                case SULFUR:
+                    // sulfanil
+                    if (chain.chain[i]->bonds[j]->bonds.size() == 2) {
+                        // getPrincipalChain
+                        // getPreffix
+                        // -sulfanil-
+                    }
+                    break;
+                
+                case NITROGEN: // amide??
+                    // amine
+                    for (int i = 0; i < chain.chain[i]->bonds[j]->bonds.size(); i++) {
+                        // getPrincipalChain
+                        // getPreffix
+                    }
+                    // -amino-
+                    break;
+
+                // halogens
+                case FLUORINE:
+                    // fluoro-
+                    break;
+                case CHLORINE:
+                    // cloro-
+                    break;
+                case BROMINE:
+                    // bromo-
+                    break;
+                case IODINE:
+                    // iodo-
+                    break;
+                default:
+                    break;
             }
         }
     }
-    // loop through chain
-    // substituents not in chain nor principal gropus (how?) -> getPreffix()
-    // getPreffix
+    
+    // order preffixes
     // functional group ->
     // not functional group -> getPrincipalChain (principalGroup = 0; ignore atom from other chain); getPreffix + carbon + "il"
     // nameCarbonChain()
