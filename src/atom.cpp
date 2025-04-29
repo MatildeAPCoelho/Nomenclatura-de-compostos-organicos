@@ -1,6 +1,6 @@
 #include "atom.h"
 #include <vector>
-#include <iostream>
+
 Atom::Atom (unsigned int species, Atom* bond, glm::vec2 position) {
     this->species = species;
     this->position = position;
@@ -356,6 +356,9 @@ Chain Atom::getPrincipalChain (std::vector<Atom*> precedingAtoms, std::map<Atom*
         if (skip)
             continue;
 
+        if (possibleChains.size() == 1 && possibleChains[0].isCyclic) {
+            continue;
+        }
         
         // the principal chain is cyclic
         if (precedingAtoms.size() > 0 && precedingAtoms[0] == bonds[i]) {
