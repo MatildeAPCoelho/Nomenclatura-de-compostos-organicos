@@ -152,6 +152,15 @@ std::string nameCarbonChain(Chain chain, bool isSubstituent = false) {
         name = std::to_string(chain.chain.size());
     }
 
+    if (chain.isCyclic) {
+        if (name[0] == 'h') {
+            name = "ciclo-" + name;
+        }
+        else {
+            name = "ciclo" + name;
+        }
+    }
+
 
     if (chain.multipleBonds.size() == 0) {
         name += "an";

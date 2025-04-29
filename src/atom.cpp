@@ -1,6 +1,6 @@
 #include "atom.h"
 #include <vector>
-
+#include <iostream>
 Atom::Atom (unsigned int species, Atom* bond, glm::vec2 position) {
     this->species = species;
     this->position = position;
@@ -70,6 +70,7 @@ Chain invertChain(Chain chain) {
         invertedChain.doubleBonds.push_back(chain.chain.size() - chain.doubleBonds[i] - 2);
     for (int i = 0; i < chain.chain.size(); i++)
         invertedChain.chain.push_back(chain.chain[chain.chain.size()-i-1]);
+    invertedChain.isCyclic = chain.isCyclic;
 
     return invertedChain;
 }
@@ -381,7 +382,7 @@ Chain Atom::getPrincipalChain (std::vector<Atom*> precedingAtoms, std::map<Atom*
         if (chain.isCyclic) {
             possibleChains.clear();
             possibleChains.push_back(chain);
-            break;
+            continue;
         }
         if (chain.cyclicGroup != nullptr) {
             if (this == chain.cyclicGroup) {
