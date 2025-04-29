@@ -1,6 +1,6 @@
 #include "atom.h"
 #include <vector>
-
+#include <iostream>
 Atom::Atom (unsigned int species, Atom* bond, glm::vec2 position) {
     this->species = species;
     this->position = position;
@@ -281,12 +281,12 @@ Chain getOrderedChain(Chain chain) {
             }
         }
 
-        firstChains = backwardChains;
+        firstChains = forwardChains;
         firstChains = compareBranchesPropertyPosition<unsigned int>(firstChains, [](Chain c) {return c.principalGroups;});
         firstChains = compareBranchesPropertyPosition<unsigned int>(firstChains, [](Chain c) {return c.multipleBonds;});
         firstChains = compareBranchesPropertyPosition<unsigned int>(firstChains, [](Chain c) {return c.doubleBonds;});
 
-        secondChains = forwardChains;
+        secondChains = backwardChains;
         secondChains = compareBranchesPropertyPositionBackward<unsigned int>(secondChains, [](Chain c) {return c.principalGroups;});
         secondChains = compareBranchesPropertyPositionBackward<unsigned int>(secondChains, [](Chain c) {return c.multipleBonds;});
         secondChains = compareBranchesPropertyPositionBackward<unsigned int>(secondChains, [](Chain c) {return c.doubleBonds;});
