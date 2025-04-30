@@ -33,6 +33,7 @@ private:
     ShapeRenderer* shapeRenderer;
 
     Atom* hoveredAtom = nullptr;
+    std::pair<Atom*, Atom*> hoveredBond = std::pair<Atom*, Atom*>(nullptr, nullptr);
 };
 
 #endif

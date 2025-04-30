@@ -10,7 +10,7 @@ LineRenderer::~LineRenderer() {
     glDeleteVertexArrays(1, &lineVAO);
 }
 
-void LineRenderer::drawLine(glm::vec2 pos1, glm::vec2 pos2, glm::vec4 color) {
+void LineRenderer::drawLine(glm::vec2 pos1, glm::vec2 pos2, glm::vec4 color, float width) {
     this->shader->Use();
     
     this->shader->SetVector2f("pos1", pos1);
@@ -19,7 +19,7 @@ void LineRenderer::drawLine(glm::vec2 pos1, glm::vec2 pos2, glm::vec4 color) {
 
     glBindVertexArray(lineVAO);
     glEnable(GL_LINE_SMOOTH);
-    glLineWidth(3);
+    glLineWidth(width);
     glDrawArrays(GL_LINES, 0, 2);
     glBindVertexArray(0);
     glDisable(GL_LINE_SMOOTH);

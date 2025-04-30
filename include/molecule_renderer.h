@@ -9,7 +9,7 @@ class MoleculeRenderer {
 public:
     MoleculeRenderer(LineRenderer* lineRenderer, ShapeRenderer* shapeRenderer);
 
-    void drawMolecule(Molecule* molecule); // options
+    void drawMolecule(Molecule* molecule, Atom* hoveredAtom = nullptr, std::pair<Atom*, Atom*> hoveredBond = std::pair<Atom*, Atom*>{nullptr, nullptr});
     void drawAtom(Atom* atom);
 
 private:

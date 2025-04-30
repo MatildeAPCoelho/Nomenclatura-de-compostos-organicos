@@ -8,7 +8,7 @@ public:
     LineRenderer(Shader* shader);
     ~LineRenderer();
 
-    void drawLine(glm::vec2 pos1, glm::vec2 pos2, glm::vec4 color);
+    void drawLine(glm::vec2 pos1, glm::vec2 pos2, glm::vec4 color, float width);
 
 private:
     Shader *shader;
