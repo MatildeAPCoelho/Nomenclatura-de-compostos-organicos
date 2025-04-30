@@ -1,6 +1,7 @@
 #include "molecule_renderer.h"
 #include "atom.h"
 #include "shape_renderer.h"
+#include <glm/geometric.hpp>
 
 MoleculeRenderer::MoleculeRenderer(LineRenderer* lineRenderer, ShapeRenderer* shapeRenderer) {
     this->lineRenderer = lineRenderer;
@@ -30,26 +31,41 @@ glm::vec3 getColor(unsigned int species) {
 }
 
 void MoleculeRenderer::drawMolecule(Molecule* molecule, Atom* hoveredAtom, std::pair<Atom*, Atom*> hoveredBond) {
-    bool alreadyDrawn = false;
+    glm::vec3 color;
+    bool inChain;
+    unsigned int bondOrder;
+    float width;
+    glm::vec2 bondDir;
+    glm::vec2 offset;
+
     for (int i = 0; i < molecule->atoms.size(); i++) {
         for (int j = 0; j < molecule->atoms[i]->bonds.size(); j++) {
-            alreadyDrawn = false;
+            // already drawn bond
             for (int k = 0; k < i; k++) {
                 if (molecule->atoms[i]->bonds[j] == molecule->atoms[k]) {
-                    alreadyDrawn = true;
-                    break;
+                    goto loopjEnd;
                 }
             }
-            if (alreadyDrawn)
-                continue;
+            for (int k = 0; k < j; k++) {
+                if (molecule->atoms[i]->bonds[j] == molecule->atoms[i]->bonds[k]) {
+                    goto loopjEnd;
+                }
+            }
 
-            glm::vec3 color;
+            // get bond order
+            bondOrder = 1;
+            for (int k = j+1; k < molecule->atoms[i]->bonds.size(); k++) {
+                if (molecule->atoms[i]->bonds[j] == molecule->atoms[i]->bonds[k]) {
+                    bondOrder++;
+                }
+            }
+
             if (molecule->atoms[i]->species == CARBON)
                 color = getColor(molecule->atoms[i]->bonds[j]->species);
             else
                 color = getColor(molecule->atoms[i]->species);
 
-            bool inChain = false;
+            inChain = false;
             for (int l = 0; l < molecule->principalChain.chain.size(); l++) {
                 if (molecule->principalChain.chain[l] == molecule->atoms[i] || molecule->principalChain.chain[l] == molecule->atoms[i]->bonds[j]) {
                     if (inChain) {
@@ -63,12 +79,33 @@ void MoleculeRenderer::drawMolecule(Molecule* molecule, Atom* hoveredAtom, std::
 
             if (hoveredBond.first == molecule->atoms[i] && hoveredBond.second == molecule->atoms[i]->bonds[j] || 
                 hoveredBond.first == molecule->atoms[i]->bonds[j] && hoveredBond.second == molecule->atoms[i]) {
-                lineRenderer->drawLine(molecule->atoms[i]->position, molecule->atoms[i]->bonds[j]->position, glm::vec4(color, 1.0f), 5);
+                width = 5;
             }
             else {
-                lineRenderer->drawLine(molecule->atoms[i]->position, molecule->atoms[i]->bonds[j]->position, glm::vec4(color, 1.0f), 3);
+                width = 3;
             }
 
+            
+            lineRenderer->drawLine(molecule->atoms[i]->position, molecule->atoms[i]->bonds[j]->position, glm::vec4(color, 1.0f), width);
+            if (bondOrder > 1) {
+                bondDir = molecule->atoms[i]->position - molecule->atoms[i]->bonds[j]->position;
+                if (bondDir.y == 0) {
+                    offset = {0.0f, 1.0f};
+                }
+                else {
+                    offset = {1, -bondDir.x/bondDir.y};
+                    offset = glm::normalize(offset);
+                }
+                for (int k = 1; 2*k < bondOrder; k ++) {
+                    lineRenderer->drawLine(molecule->atoms[i]->position + offset*10.0f*(float)k, molecule->atoms[i]->bonds[j]->position + offset*10.0f*(float)k, glm::vec4(color, 1.0f), width);
+                    lineRenderer->drawLine(molecule->atoms[i]->position - offset*10.0f*(float)k, molecule->atoms[i]->bonds[j]->position - offset*10.0f*(float)k, glm::vec4(color, 1.0f), width);
+                }
+                if (bondOrder % 2 == 0) {
+                    lineRenderer->drawLine(molecule->atoms[i]->position + offset*10.0f*(float)bondOrder/2.0f, molecule->atoms[i]->bonds[j]->position + offset*10.0f*(float)bondOrder/2.0f, glm::vec4(color, 1.0f), width);
+                }
+            }
+
+            loopjEnd:;
         }
     }
 
