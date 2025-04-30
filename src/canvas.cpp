@@ -249,7 +249,9 @@ void Canvas::processInput() {
                     }
                     
                     bondVector = molecules[i]->atoms[j]->position - molecules[i]->atoms[j]->bonds[k]->position;
-                    if (glm::length(glm::cross(glm::vec3(bondVector, 0.0f), glm::vec3(molecules[i]->atoms[j]->position-mousePos, 0.0f))) / glm::length(bondVector) <= 10) {
+                    if (glm::length(glm::cross(glm::vec3(bondVector, 0.0f), glm::vec3(molecules[i]->atoms[j]->position-mousePos, 0.0f))) / glm::length(bondVector) <= 10 &&
+                        (molecules[i]->atoms[j]->position.x < molecules[i]->atoms[j]->bonds[k]->position.x && mousePos.x >= molecules[i]->atoms[j]->position.x - 10 && mousePos.x <= molecules[i]->atoms[j]->bonds[k]->position.x + 10 ||
+                         molecules[i]->atoms[j]->position.x > molecules[i]->atoms[j]->bonds[k]->position.x && mousePos.x <= molecules[i]->atoms[j]->position.x - 10 && mousePos.x >= molecules[i]->atoms[j]->bonds[k]->position.x + 10)) {
                         hoveredBond.first = molecules[i]->atoms[j];
                         hoveredBond.second = molecules[i]->atoms[j]->bonds[k];
                         goto exitLoopi;
