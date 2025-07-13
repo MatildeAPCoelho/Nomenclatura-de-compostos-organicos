@@ -30,7 +30,7 @@ glm::vec3 getColor(unsigned int species) {
     }
 }
 
-void MoleculeRenderer::drawMolecule(Molecule* molecule, Atom* hoveredAtom, std::pair<Atom*, Atom*> hoveredBond) {
+void MoleculeRenderer::drawMolecule(Molecule* molecule, Atom* hoveredAtom) {
     glm::vec3 color;
     bool inChain;
     unsigned int bondOrder;
@@ -77,14 +77,7 @@ void MoleculeRenderer::drawMolecule(Molecule* molecule, Atom* hoveredAtom, std::
                 }
             }
 
-            if (hoveredBond.first == molecule->atoms[i] && hoveredBond.second == molecule->atoms[i]->bonds[j] || 
-                hoveredBond.first == molecule->atoms[i]->bonds[j] && hoveredBond.second == molecule->atoms[i]) {
-                width = 5;
-            }
-            else {
-                width = 3;
-            }
-
+            width = 3;
             
             lineRenderer->drawLine(molecule->atoms[i]->position, molecule->atoms[i]->bonds[j]->position, glm::vec4(color, 1.0f), width);
             if (bondOrder > 1) {

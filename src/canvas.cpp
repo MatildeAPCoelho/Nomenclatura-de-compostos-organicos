@@ -1,4 +1,5 @@
 #include "canvas.h"
+#include "atom.h"
 #include "line_renderer.h"
 #include "molecule.h"
 #include "resource_manager.h"
@@ -126,10 +127,20 @@ void Canvas::processInput() {
         if (hoveredAtom != nullptr)
             hoveredAtom->species = FLUORINE;
     }
+    else if (keys[GLFW_KEY_L]) {
+        drawingSpecies = CHLORINE;
+        if (hoveredAtom != nullptr)
+            hoveredAtom->species = CHLORINE;
+    }
     else if (keys[GLFW_KEY_B]) {
         drawingSpecies = BROMINE;
         if (hoveredAtom != nullptr)
             hoveredAtom->species = BROMINE;
+    }
+    else if (keys[GLFW_KEY_I]) {
+        drawingSpecies = IODINE;
+        if (hoveredAtom != nullptr)
+            hoveredAtom->species = IODINE;
     }
     else if (keys[GLFW_KEY_S]) {
         drawingSpecies = SULFUR;
@@ -217,7 +228,6 @@ void Canvas::processInput() {
 
 
     hoveredAtom = nullptr;
-    hoveredBond = std::pair<Atom*, Atom*>(nullptr, nullptr);
     for (int i = 0; i < molecules.size(); i++) {
         for (int j = 0; j < molecules[i]->atoms.size(); j++) {
             Atom* atom = molecules[i]->atoms[j];
@@ -241,24 +251,6 @@ void Canvas::processInput() {
                         goto loopjEnd;
                     }
                 }
-                for (int k = 0; k < molecules[i]->atoms[j]->bonds.size(); k++) {
-                    for (int l = 0; l < viewedAtoms.size(); l++) {
-                        if (molecules[i]->atoms[j]->bonds[k] == viewedAtoms[l]) {
-                            goto loopkEnd;
-                        }
-                    }
-                    
-                    bondVector = molecules[i]->atoms[j]->position - molecules[i]->atoms[j]->bonds[k]->position;
-                    if (glm::length(glm::cross(glm::vec3(bondVector, 0.0f), glm::vec3(molecules[i]->atoms[j]->position-mousePos, 0.0f))) / glm::length(bondVector) <= 10 &&
-                        (molecules[i]->atoms[j]->position.x < molecules[i]->atoms[j]->bonds[k]->position.x && mousePos.x >= molecules[i]->atoms[j]->position.x - 10 && mousePos.x <= molecules[i]->atoms[j]->bonds[k]->position.x + 10 ||
-                         molecules[i]->atoms[j]->position.x > molecules[i]->atoms[j]->bonds[k]->position.x && mousePos.x <= molecules[i]->atoms[j]->position.x - 10 && mousePos.x >= molecules[i]->atoms[j]->bonds[k]->position.x + 10)) {
-                        hoveredBond.first = molecules[i]->atoms[j];
-                        hoveredBond.second = molecules[i]->atoms[j]->bonds[k];
-                        goto exitLoopi;
-                    }
-
-                    loopkEnd:;
-                }
 
                 loopjEnd:;
             }
@@ -272,7 +264,7 @@ void Canvas::render() {
     ResourceManager::GetShader("shape")->SetVector2f("windowSize", windowSize, true);
 
     for (int i = 0; i < molecules.size(); i++) {
-        renderer->drawMolecule(molecules[i], hoveredAtom, hoveredBond);
+        renderer->drawMolecule(molecules[i], hoveredAtom);
     }
     if (hoveredAtom != nullptr) {
         renderer->drawAtom(hoveredAtom);

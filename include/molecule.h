@@ -11,7 +11,7 @@ enum substituent {
     CHAIN,
     CARBOXYL,    // OOH
     CARBOALKOXY, // OOR
-    HALOFORMYL,  // OOR
+    HALOFORMYL,  // OXR
     CARBOXAMIDE, // ONRR
     NITRILE,     // =-N
     ALDEHYDE,    // =O
@@ -29,7 +29,6 @@ public:
     Molecule(std::vector<Atom*> atoms);
     ~Molecule();
 
-    std::map<Atom*, std::vector<unsigned int>> getFunctionalGroups();
     std::string getName();
 };
 
