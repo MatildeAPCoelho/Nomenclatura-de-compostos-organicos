@@ -1250,7 +1250,7 @@ std::string Molecule::getName() {
     std::string name = getSuffix(prefixes, principalChain, principalGroupAtoms, principalGroup);
     
 
-    if (name.size() >= std::string("benzenocarboxílico").size() && name.substr(name.size() - std::string("benzenocarboxílico").size(), std::string("benzenocarboxílico").size()) == "benzenocarboxílico") {
+    if (name.size() >= std::string("ácido benzenocarboxílico").size() && name.substr(name.size() - std::string("benzenocarboxílico").size(), std::string("benzenocarboxílico").size()) == "benzenocarboxílico") {
         name = name.substr(0, name.size()-std::string("benzenocarboxílico").size()) + "benzóico";
     }
     
@@ -1269,6 +1269,11 @@ std::string Molecule::getName() {
     else if (name.size() >= std::string("benzenol").size() && name.substr(name.size() - std::string("benzenol").size(), std::string("benzenol").size()) == "benzenol") {
         name = name.substr(0, name.size()-std::string("benzenol").size()) + "fenol";
     }
+
+    else if (name.size() >= std::string("ácido etanóico").size() && name.substr(name.size() - std::string("etanóico").size(), std::string("etanóico").size()) == "etanóico") {
+        name = name.substr(0, name.size()-std::string("etanóico").size()) + "acético";
+    }
+
 
     return name;
 }
