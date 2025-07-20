@@ -13,3 +13,6 @@ include_directories(./include)
 
 add_executable(QOBI ${SRC} glad.c)
 target_link_libraries(QOBI glfw)
+
+add_executable(TestNomenclature src/tests/nomenclature_test.cpp src/molecule.cpp src/atom.cpp)
+add_test(NAME TestNomenclature COMMAND TestNomenclature)
