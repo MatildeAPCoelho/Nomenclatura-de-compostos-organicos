@@ -20,6 +20,7 @@ public:
     bool mouseKeys[8] = {0};
     glm::vec2 mousePos;
     float zoom = 1.0f;
+    glm::vec2 offset = {0.0f, 0.0f};
 
     Canvas(glm::vec2 windowSize);
     ~Canvas();

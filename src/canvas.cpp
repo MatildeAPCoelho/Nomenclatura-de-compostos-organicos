@@ -34,6 +34,23 @@ void Canvas::init() {
 }
 
 void Canvas::processInput() {
+    // moving canvas
+    static bool movingCanvas = false;
+    static glm::vec2 initialPos;
+    if (mouseKeys[2]) {
+        if (!movingCanvas) {
+            movingCanvas = true;
+            initialPos = mousePos;
+        }
+        else {
+            offset += mousePos - initialPos;
+            initialPos = mousePos;
+        }
+    }
+    else {
+        movingCanvas = false;
+    }
+
     // drawing molecules
     static bool movingAtomsMode = false;
     static bool drawingLine = false;
@@ -264,6 +281,8 @@ void Canvas::render() {
     ResourceManager::GetShader("shape")->SetVector2f("windowSize", windowSize, true);
     ResourceManager::GetShader("line")->SetFloat("zoom", zoom, true);
     ResourceManager::GetShader("shape")->SetFloat("zoom", zoom, true);
+    ResourceManager::GetShader("line")->SetVector2f("offset", offset, true);
+    ResourceManager::GetShader("shape")->SetVector2f("offset", offset, true);
 
     for (int i = 0; i < molecules.size(); i++) {
         renderer->drawMolecule(molecules[i], hoveredAtom);
