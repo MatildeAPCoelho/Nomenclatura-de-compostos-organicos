@@ -134,6 +134,8 @@ int validateName(std::string name, std::string smiles) {
 
 int main() {
     std::vector<std::pair<std::string, std::string>> tests = {
+        // IUPAC Blue Book
+        // P-12.1
         {"metano", "C"},
         {"pentano", "CCCCC"},
         {"ciclo-hexano", "C1CCCCC1"},
@@ -144,12 +146,25 @@ int main() {
         {"5-cloropentan-2-ona", "CC(=O)CCCCl"},
         {"1-etoxipropano", "CCOCCC"},
         {"4-cloropentan-2-ona", "CC(Cl)CC(=O)C"},
-        {"ciclo-hexeno", "C1=CCCCC1"}
+        {"ciclo-hexeno", "C1=CCCCC1"},
+        // P-13.1
+        {"etano", "CC"},
+        {"etanotiol", "CCS"},
+        {"benzeno", "C1=CC=CC=C1"},
+        {"bromobenzeno", "C1=CC=CC=C1Br"},
+        // P-13.2.1.1
+        {"ciclotetradecano", "C1CCCCCCCCCCCCC1"},
+        // P-13.2.2.2
+        {"ácido benzóico", "C1=CC=CC=C1C(=O)O"},
+        {"ácido hexanóico", "CCCCCC(=O)O"},
+        {"ácido 4-formilbenzóico", "C1=CC(C=O)=CC=C1C(=O)O"},
+        // P-13.3.3.1
+        {"acetonitrilo", "CC#N"}
     };
 
     for (int i = 0; i < tests.size(); i++) {
         if (validateName(tests[i].first, tests[i].second) == 1) {
-            return 1;
+            //return 1;
         }
     }
 

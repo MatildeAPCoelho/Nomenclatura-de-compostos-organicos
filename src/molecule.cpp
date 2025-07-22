@@ -1125,7 +1125,7 @@ std::string getSuffix(std::map<std::string, std::vector<std::string>> prefixes, 
     }
 
     std::string carbonChain = nameCarbonChain(chain);
-    if (carbonChain[0] == 'h' && name.size() > 0 && name[name.size()-1] != ')') {
+    if (carbonChain[0] == 'h' && orderedPrefixes.size() > 0 && name[name.size()-1] != ')') {
         carbonChain = '-' + carbonChain;
     }
 
