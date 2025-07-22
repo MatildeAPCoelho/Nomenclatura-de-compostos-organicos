@@ -262,6 +262,8 @@ void Canvas::processInput() {
 void Canvas::render() {
     ResourceManager::GetShader("line")->SetVector2f("windowSize", windowSize, true);
     ResourceManager::GetShader("shape")->SetVector2f("windowSize", windowSize, true);
+    ResourceManager::GetShader("line")->SetFloat("zoom", zoom, true);
+    ResourceManager::GetShader("shape")->SetFloat("zoom", zoom, true);
 
     for (int i = 0; i < molecules.size(); i++) {
         renderer->drawMolecule(molecules[i], hoveredAtom);

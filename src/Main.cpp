@@ -9,6 +9,7 @@
 // GLFW function declarations
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 
 // dimensions of the screen
 const unsigned int WINDOW_WIDTH = 800;
@@ -55,6 +56,7 @@ int main () {
 
     glfwSetKeyCallback(window, key_callback);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+    glfwSetScrollCallback(window, scroll_callback);
 
     // OpenGL configuration
     glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
@@ -136,4 +138,8 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
     glViewport(0, 0, width, height);
+}
+
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
+    canvas->zoom *= exp(yoffset/10);
 }

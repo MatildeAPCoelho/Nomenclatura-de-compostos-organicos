@@ -19,6 +19,7 @@ public:
     bool heldKeys[1024] = {0};
     bool mouseKeys[8] = {0};
     glm::vec2 mousePos;
+    float zoom = 1.0f;
 
     Canvas(glm::vec2 windowSize);
     ~Canvas();
