@@ -826,7 +826,7 @@ std::map<std::string, std::vector<std::string>> addAminePrefixes(std::map<std::s
     return prefixes;
 }
 
-std::string getSuffix(std::map<std::string, std::vector<std::string>> prefixes, Chain chain, std::vector<Atom*> principalGroupAtoms, unsigned int principalGroup) {
+std::string getSuffix(std::map<std::string, std::vector<std::string>> prefixes, Chain chain, std::vector<Atom*> principalGroupAtoms, unsigned int principalGroup, bool getPIN = true) {
     std::string name;
     std::string suffix;
     std::vector<std::pair<Atom*, unsigned int>> bonds;
@@ -1075,7 +1075,7 @@ std::string getSuffix(std::map<std::string, std::vector<std::string>> prefixes, 
 
     bool isBenzene = chain.multipleBonds.size() == 3 && chain.doubleBonds.size() == 3 && chain.doubleBonds[0]-chain.doubleBonds[1] == 2 && chain.doubleBonds[1] - chain.doubleBonds[2] == 2;
 
-    if ((chain.isCyclic || chain.chain.size() == 2) && chain.substituents.size() == 1 && (chain.multipleBonds.size() == 0 || isBenzene) && principalGroup != CHAIN || chain.chain.size() == 1 && (principalGroup >= KETONE || chain.carbox) || principalGroup != CHAIN && isBenzene && chain.principalGroups.size() == 1) {
+    if ((chain.isCyclic || chain.chain.size() == 2) && chain.substituents.size() == 1 && (chain.multipleBonds.size() == 0 || isBenzene) && principalGroup >= KETONE || chain.chain.size() == 1 && (principalGroup >= KETONE || chain.carbox) || principalGroup != CHAIN && isBenzene && chain.principalGroups.size() == 1) {
         suffix = suffix.substr(1 + 2*chain.principalGroups.size(), suffix.size());
     }
     
@@ -1098,7 +1098,7 @@ std::string getSuffix(std::map<std::string, std::vector<std::string>> prefixes, 
 
     for (int i = 0; i < orderedPrefixes.size(); i++) {
         std::string prefixName = "";
-        if (chain.chain.size() > 1 || principalGroup == AMINE || principalGroup == CARBOXAMIDE) {
+        if (principalGroup == AMINE || principalGroup == CARBOXAMIDE || chain.chain.size() > 1 && !(chain.chain.size() == 2 && principalGroup != CHAIN && principalGroup < KETONE)) {
             prefixName += prefixes[orderedPrefixes[i]][0];
             for (int j = 1; j < prefixes[orderedPrefixes[i]].size(); j++) {
                 prefixName += "," + prefixes[orderedPrefixes[i]][j];
@@ -1133,7 +1133,23 @@ std::string getSuffix(std::map<std::string, std::vector<std::string>> prefixes, 
     if (carbonChain == "ciclo-hexa-1,3,5-trien" || carbonChain == "ciclo-hexa-2,4,6-trien") {
         carbonChain = "benzen";
     }
-;
+    if (getPIN && carbonChain == "etan" && principalGroup < KETONE && chain.principalGroups.size() == 1) {
+        if (principalGroup == CARBOXYL) {
+            carbonChain = "acético";
+            suffix = "";
+        }
+        else if (principalGroup == CARBOALKOXY) {
+            carbonChain = "acetato";
+            suffix = suffix.substr(std::string("oato").size(), suffix.size()-std::string("oato").size());
+        }
+        else {
+            carbonChain = "acet";
+            if (principalGroup == ALDEHYDE) {
+                suffix = "aldeído";
+            }
+        }
+    }
+
     name += carbonChain;
     name = name + suffix;
 
@@ -1144,7 +1160,7 @@ std::string getSuffix(std::map<std::string, std::vector<std::string>> prefixes, 
     return name;
 }
 
-std::string Molecule::getName() {
+std::string Molecule::getName(bool getPIN) {
     // find functional groups
     principalGroupInfo info = getPrincipalGroup(atoms);
     std::vector<Atom*> principalGroupAtoms = info.principalGroupAtoms;
@@ -1247,7 +1263,7 @@ std::string Molecule::getName() {
     std::map<std::string, std::vector<std::string>> prefixes = getChainPrefixes(principalChain, principalGroupAtoms, principalGroup, ignoredAtoms);
 
     // get suffix
-    std::string name = getSuffix(prefixes, principalChain, principalGroupAtoms, principalGroup);
+    std::string name = getSuffix(prefixes, principalChain, principalGroupAtoms, principalGroup, getPIN);
     
 
     if (name.size() >= std::string("ácido benzenocarboxílico").size() && name.substr(name.size() - std::string("benzenocarboxílico").size(), std::string("benzenocarboxílico").size()) == "benzenocarboxílico") {
@@ -1270,8 +1286,10 @@ std::string Molecule::getName() {
         name = name.substr(0, name.size()-std::string("benzenol").size()) + "fenol";
     }
 
-    else if (name.size() >= std::string("ácido etanóico").size() && name.substr(name.size() - std::string("etanóico").size(), std::string("etanóico").size()) == "etanóico") {
-        name = name.substr(0, name.size()-std::string("etanóico").size()) + "acético";
+    if (getPIN) {
+        if (name == "metoxibenzeno") {
+            name = "anisol";
+        }
     }
 
 

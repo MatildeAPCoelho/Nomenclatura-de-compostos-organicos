@@ -29,7 +29,7 @@ public:
     Molecule(std::vector<Atom*> atoms);
     ~Molecule();
 
-    std::string getName();
+    std::string getName(bool getPIN = true);
 };
 
 #endif

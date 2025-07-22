@@ -159,7 +159,12 @@ int main() {
         {"ácido hexanóico", "CCCCCC(=O)O"},
         {"ácido 4-formilbenzóico", "C1=CC(C=O)=CC=C1C(=O)O"},
         // P-13.3.3.1
-        {"acetonitrilo", "CC#N"}
+        {"acetonitrilo", "CC#N"},
+        // P-13.3.3.2
+        {"metanol", "CO"},
+        {"diciclo-hexilmetanona", "C1CCCCC1C(=O)C2CCCCC2"},
+        {"anisol", "COC1=CC=CC=C1"},
+        {"fenilacetonitrilo", "C1=CC=CC=C1CC#N"}
     };
 
     for (int i = 0; i < tests.size(); i++) {
