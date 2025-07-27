@@ -328,9 +328,20 @@ int compareStrings(std::string one, std::string two) {
     for (int i = 0; i < one.size(); i++, ii++) {
         while (!std::isalpha(one[i]) || one[i] == 'N') {
             i++;
+            if (i == one.size()) {
+                break;
+            }
         }
         while (!std::isalpha(two[ii]) || two[ii] == 'N') {
             ii++;
+            if (ii == two.size()) {
+                if (i == one.size()) {
+                    return 0;
+                }
+                else {
+                    return -1;
+                }
+            }
         }
         
         if (ii == two.size() || one[i] > two[ii]) {
