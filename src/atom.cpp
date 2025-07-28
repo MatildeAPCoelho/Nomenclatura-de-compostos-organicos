@@ -260,6 +260,9 @@ Chain Atom::getPrincipalChain (std::vector<Atom*> precedingAtoms, std::vector<At
             for (int j = 0; j < possibleChains.size(); j++) {
                 chain.substituents.push_back(precedingAtoms.size());
             }
+            for (int j = 0; j < nonCarbonSubstituents; j++) {
+                chain.substituents.push_back(precedingAtoms.size());
+            }
 
             return chain;
         }
