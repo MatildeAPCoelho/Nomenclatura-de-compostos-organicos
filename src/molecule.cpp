@@ -1355,21 +1355,24 @@ std::vector<Chain> comparePrefixes(std::vector<Chain> chains, std::vector<Atom*>
     }
     
     std::vector<std::map<std::string, std::vector<std::string>>> prefixes;
+    std::vector<std::vector<std::string>> prefixOrder;
     for (int i = 0; i < chains.size(); i++) {
         prefixes.push_back(getChainPrefixes(chains[i], principalGroupAtoms, principalGroup, ignoredAtoms));
+        prefixOrder.push_back(orderPrefixes(prefixes[i]));
     }
-    std::vector<std::string> prefixOrder = orderPrefixes(prefixes[0]);
 
-    std::string prefix;
-    for (int i = 0; i < prefixOrder.size(); i++) {
-        prefix = prefixOrder[i];
+    std::string prefixi;
+    std::string prefixj;
+    for (int i = 0; i < prefixOrder[index[0]].size(); i++) {
+        prefixi = prefixOrder[index[0]][i];
         for (int j = 1; j < index.size(); j++) {
-            if (prefixes[index[0]][prefix].size() > prefixes[index[j]][prefix].size()) {
+            prefixj = prefixOrder[index[j]][i];
+            if (prefixes[index[0]][prefixi].size() > prefixes[index[j]][prefixj].size()) {
                 index.erase(index.begin() + j);
                 j--;
                 continue;
             }
-            if (prefixes[index[0]][prefix].size() < prefixes[index[j]][prefix].size()) {
+            if (prefixes[index[0]][prefixi].size() < prefixes[index[j]][prefixj].size()) {
                 while (j > 0) {
                     index.erase(index.begin());
                     j--;
@@ -1377,8 +1380,8 @@ std::vector<Chain> comparePrefixes(std::vector<Chain> chains, std::vector<Atom*>
                 continue;
             }
 
-            for (int k = (int)prefixes[index[0]][prefix].size()-1; k >= 0; k--) {
-                if (prefixes[index[0]][prefix][k] < prefixes[index[j]][prefix][k]) {
+            for (int k = (int)prefixes[index[0]][prefixi].size()-1; k >= 0; k--) {
+                if (prefixes[index[0]][prefixi][k] < prefixes[index[j]][prefixj][k]) {
                     index.erase(index.begin() + j);
                     j--;
                     break;
