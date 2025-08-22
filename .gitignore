@@ -5,4 +5,6 @@ CMakeCache.txt
 compile_commands.json
 Makefile
 QOBI
+QOBI.exe
 TestNomenclature
+TestNomenclature.exe

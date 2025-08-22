@@ -81,7 +81,7 @@ std::vector<std::pair<Atom*, unsigned int>> getBondTypes(Atom* atom, std::vector
                 goto loopEnd;
             }
         }
-        bonds.push_back(std::pair{atom->bonds[i], 1});
+        bonds.push_back(std::pair<Atom*, unsigned int>{atom->bonds[i], 1});
         loopEnd:;
     }
 
